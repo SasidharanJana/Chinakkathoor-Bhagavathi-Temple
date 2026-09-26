@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donate — Sree Chinakkathoor Bhagavathi Temple</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7a1f1f">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{--maroon:#7a1f1f;--gold:#c8961e;--gold-light:#f6e7c3;--bg:#faf6ee;--ink:#2b2118;--muted:#7a6f60;--ok:#1f7a3d;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:linear-gradient(135deg,var(--maroon),#5a1414);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  header h1{font-size:16px;margin:0;}
+  .lang-toggle{cursor:pointer;border:1px solid var(--gold);background:transparent;color:#fff;padding:6px 12px;border-radius:6px;font-size:13px;}
+  main{max-width:520px;margin:0 auto;padding:16px;}
+  .card{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+  .card h2{color:var(--maroon);margin-top:0;font-size:16px;}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;}
+  input,select{width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;}
+  #qrBox{text-align:center;margin:14px 0;}
+  #qrBox canvas{margin:0 auto;}
+  .upi-id{font-size:13px;color:var(--muted);text-align:center;margin-top:6px;}
+  .btn{width:100%;padding:12px;background:var(--maroon);color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:10px;}
+  .btn.alt{background:#fff;color:var(--maroon);border:1px solid var(--maroon);}
+  .nav-links{display:flex;gap:10px;justify-content:center;margin:14px 0;}
+  .nav-links a{color:var(--maroon);font-size:13px;text-decoration:none;}
+  .msg{font-size:13px;margin-top:8px;}
+  .msg.ok{color:var(--ok);}
+  .msg.err{color:#b3261e;}
+  progress{width:100%;margin-top:8px;}
+</style>
+</head>
+<body>
+<header>
+  <h1 data-i18n="pageTitle">Donate to the Temple</h1>
+  <button class="lang-toggle" onclick="toggleLang()" id="langBtn">മലയാളം</button>
+</header>
+
+<main>
+  <div class="nav-links">
+    <a href="landing.html" data-i18n="homeLink">← Temple Home</a>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="scanTitle">Scan &amp; Pay via UPI</h2>
+    <label data-i18n="amountLabel">Amount (₹) — optional, for QR only</label>
+    <input type="number" id="qrAmount" placeholder="e.g. 501" oninput="renderQR()">
+    <div id="qrBox"></div>
+    <div class="upi-id" id="upiIdText">UPI ID: REPLACE-WITH-TEMPLE-UPI-ID@bank</div>
+    <p class="msg" data-i18n="scanNote">After paying, please fill in your details below so we can issue you a record of your donation.</p>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="detailsTitle">Your Details (optional but recommended)</h2>
+    <label data-i18n="donorName">Full Name</label>
+    <input id="dName" placeholder="Your name">
+    <label data-i18n="donorPhone">Phone</label>
+    <input id="dPhone" placeholder="10-digit mobile" maxlength="10">
+    <label data-i18n="amountPaid">Amount Paid (₹)</label>
+    <input id="dAmount" type="number">
+    <button class="btn" onclick="submitDonorRecord()" data-i18n="submitBtn">Submit</button>
+    <div id="donorMsg" class="msg"></div>
+  </div>
+
+  <!-- Photo upload temporarily disabled: Firebase Storage requires the Blaze
+       (billing) plan. Re-enable this card once Storage is set up — see
+       SETUP_STEPS.md "Photo gallery (optional, later)" section. -->
+  <div class="card" style="display:none;">
+    <h2 data-i18n="uploadTitle">Upload Festival Photos</h2>
+    <p class="msg" data-i18n="uploadNote">Share your photos from the Pooram — they'll be reviewed and added to the gallery.</p>
+    <input type="file" id="photoFile" accept="image/*">
+    <button class="btn alt" onclick="uploadPhoto()" data-i18n="uploadBtn">Upload Photo</button>
+    <progress id="uploadProgress" value="0" max="100" style="display:none;"></progress>
+    <div id="uploadMsg" class="msg"></div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+/* Same config as index.html — keep both files in sync */
+const firebaseConfig = {
+  apiKey: "AIzaSyCYfO8427KfmTTNNS1G4rDPTrQVrqoUnFo",
+  authDomain: "chinakkathoor-temple.firebaseapp.com",
+  projectId: "chinakkathoor-temple",
+  storageBucket: "chinakkathoor-temple.firebasestorage.app",
+  messagingSenderId: "213864766388",
+  appId: "1:213864766388:web:bdfb3beeb4b1ddc82670e1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* REPLACE with the temple's real UPI ID (payee VPA) and name */
+const UPI_ID = "REPLACE-WITH-TEMPLE-UPI-ID@bank";
+const UPI_PAYEE_NAME = "Sree Chinakkathoor Bhagavathi Temple";
+
+const I18N = {
+  en:{pageTitle:"Donate to the Temple",homeLink:"← Temple Home",galleryLink:"Photo Gallery →",
+    scanTitle:"Scan & Pay via UPI",amountLabel:"Amount (₹) — optional, for QR only",
+    scanNote:"After paying, please fill in your details below so we can issue you a record of your donation.",
+    detailsTitle:"Your Details (optional but recommended)",donorName:"Full Name",donorPhone:"Phone",
+    amountPaid:"Amount Paid (₹)",submitBtn:"Submit",
+    uploadTitle:"Upload Festival Photos",uploadNote:"Share your photos from the Pooram — they'll be reviewed and added to the gallery.",
+    uploadBtn:"Upload Photo"},
+  ml:{pageTitle:"ക്ഷേത്രത്തിലേക്ക് സംഭാവന നൽകുക",homeLink:"← ക്ഷേത്ര ഹോം",galleryLink:"ഫോട്ടോ ഗാലറി →",
+    scanTitle:"സ്കാൻ ചെയ്ത് യുപിഐ വഴി പണമടയ്ക്കുക",amountLabel:"തുക (₹) — ഐച്ഛികം, QR-ന് മാത്രം",
+    scanNote:"പണമടച്ച ശേഷം, നിങ്ങളുടെ വിവരങ്ങൾ താഴെ നൽകുക, ഞങ്ങൾ നിങ്ങളുടെ സംഭാവനയുടെ രേഖ നൽകും.",
+    detailsTitle:"നിങ്ങളുടെ വിവരങ്ങൾ (ഐച്ഛികം)",donorName:"പൂർണ്ണ നാമം",donorPhone:"ഫോൺ",
+    amountPaid:"അടച്ച തുക (₹)",submitBtn:"സമർപ്പിക്കുക",
+    uploadTitle:"ഉത്സവ ഫോട്ടോകൾ അപ്‌ലോഡ് ചെയ്യുക",uploadNote:"പൂരത്തിലെ നിങ്ങളുടെ ഫോട്ടോകൾ പങ്കിടുക — അവലോകനത്തിന് ശേഷം ഗാലറിയിൽ ചേർക്കും.",
+    uploadBtn:"ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക"}
+};
+let currentLang = localStorage.getItem('scbt_lang') || 'en';
+function applyLang(){
+  const dict=I18N[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ if(dict[el.dataset.i18n]) el.textContent=dict[el.dataset.i18n]; });
+  document.getElementById('langBtn').textContent = currentLang==='en' ? 'മലയാളം' : 'English';
+  document.title = dict.pageTitle;
+}
+function toggleLang(){
+  currentLang = currentLang==='en'?'ml':'en';
+  localStorage.setItem('scbt_lang', currentLang);
+  applyLang();
+}
+document.getElementById('upiIdText').textContent = 'UPI ID: ' + UPI_ID;
+
+function renderQR(){
+  const amt = document.getElementById('qrAmount').value;
+  const box = document.getElementById('qrBox');
+  box.innerHTML='';
+  let upiUrl = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&cu=INR`;
+  if(amt && Number(amt)>0) upiUrl += `&am=${Number(amt)}`;
+  new QRCode(box, { text: upiUrl, width: 200, height: 200, colorDark:"#7a1f1f", colorLight:"#ffffff" });
+}
+
+async function submitDonorRecord(){
+  const name=document.getElementById('dName').value.trim();
+  const phone=document.getElementById('dPhone').value.trim();
+  const amount=Number(document.getElementById('dAmount').value);
+  const msg=document.getElementById('donorMsg');
+  if(!amount || amount<=0){ msg.textContent = currentLang==='en' ? 'Please enter a valid amount.' : 'ദയവായി ശരിയായ തുക നൽകുക.'; msg.className='msg err'; return; }
+  try{
+    await db.collection('publicDonationClaims').add({
+      name, phone, amount, submittedAt: firebase.firestore.FieldValue.serverTimestamp(), reviewed:false
+    });
+    msg.textContent = currentLang==='en' ? 'Thank you! The temple office will confirm and issue your receipt.' : 'നന്ദി! ക്ഷേത്ര ഓഫീസ് സ്ഥിരീകരിച്ച് നിങ്ങളുടെ രസീത് നൽകും.';
+    msg.className='msg ok';
+    document.getElementById('dName').value=''; document.getElementById('dPhone').value=''; document.getElementById('dAmount').value='';
+  }catch(e){
+    msg.textContent='Error: '+e.message; msg.className='msg err';
+  }
+}
+
+applyLang();
+renderQR();
+</script>
+</body>
+</html>

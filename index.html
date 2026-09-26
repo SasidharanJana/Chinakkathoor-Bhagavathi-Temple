@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sree Chinakkathoor Bhagavathi Temple — Donation Office</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7a1f1f">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{
+    --maroon:#7a1f1f; --gold:#c8961e; --gold-light:#f6e7c3; --bg:#faf6ee;
+    --ink:#2b2118; --muted:#7a6f60; --ok:#1f7a3d; --err:#b3261e;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header.top{background:linear-gradient(135deg,var(--maroon),#5a1414);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  header.top h1{font-size:18px;margin:0;}
+  header.top small{display:block;font-weight:400;opacity:.85;font-size:12px;}
+  .lang-toggle,.btn{cursor:pointer;border:1px solid var(--gold);background:transparent;color:#fff;padding:6px 12px;border-radius:6px;font-size:13px;}
+  .lang-toggle:hover,.btn:hover{background:rgba(255,255,255,.1);}
+  #loginScreen{max-width:380px;margin:60px auto;background:#fff;padding:28px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+  #loginScreen h2{margin-top:0;color:var(--maroon);text-align:center;}
+  #loginScreen input{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd;border-radius:6px;font-size:14px;}
+  #loginScreen button{width:100%;padding:11px;background:var(--maroon);color:#fff;border:none;border-radius:6px;font-size:15px;margin-top:10px;cursor:pointer;}
+  #loginError{color:var(--err);font-size:13px;margin-top:8px;text-align:center;}
+  nav.tabs{display:flex;background:#fff;border-bottom:2px solid var(--gold-light);overflow-x:auto;}
+  nav.tabs button{flex:1;padding:12px 8px;border:none;background:transparent;font-size:13px;cursor:pointer;color:var(--muted);white-space:nowrap;}
+  nav.tabs button.active{color:var(--maroon);border-bottom:3px solid var(--maroon);font-weight:600;}
+  main{max-width:900px;margin:0 auto;padding:16px;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .card{background:#fff;border-radius:10px;padding:18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;}
+  input,select,textarea{width:100%;padding:9px;border:1px solid #ddd;border-radius:6px;font-size:14px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .btn-primary{background:var(--maroon);color:#fff;border:none;padding:11px 20px;border-radius:6px;font-size:15px;cursor:pointer;margin-top:14px;}
+  .btn-secondary{background:#fff;color:var(--maroon);border:1px solid var(--maroon);padding:9px 16px;border-radius:6px;font-size:13px;cursor:pointer;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{padding:8px;text-align:left;border-bottom:1px solid #eee;}
+  th{color:var(--muted);font-weight:600;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:var(--gold-light);color:#7a5a00;}
+  .amt{font-weight:600;color:var(--maroon);}
+  .muted{color:var(--muted);font-size:12px;}
+  .search{margin-bottom:10px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:14px;}
+  .receipt-wrap{position:relative;background:#fff;max-width:420px;width:100%;border:3px solid var(--gold);border-radius:8px;padding:22px;max-height:90vh;overflow:auto;}
+  .receipt-wrap .close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+  .receipt-header{text-align:center;border-bottom:2px dashed var(--gold);padding-bottom:10px;margin-bottom:12px;}
+  .receipt-header h2{margin:4px 0 0;color:var(--maroon);font-size:16px;}
+  .receipt-header p{margin:2px 0;font-size:11px;color:var(--muted);}
+  .receipt-no{font-size:13px;font-weight:700;color:var(--maroon);text-align:center;margin-bottom:10px;}
+  .rline{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #f2f2f2;}
+  .rline .lbl{color:var(--muted);}
+  .rline .val{font-weight:600;text-align:right;}
+  .receipt-amount{background:var(--gold-light);padding:10px;border-radius:6px;text-align:center;margin:10px 0;}
+  .receipt-amount .num{font-size:20px;font-weight:700;color:var(--maroon);}
+  .receipt-amount .words{font-size:11px;color:var(--muted);margin-top:2px;}
+  .receipt-footer{margin-top:16px;font-size:10px;color:var(--muted);text-align:center;border-top:1px dashed var(--gold);padding-top:10px;}
+  .sig-block{text-align:right;margin-top:20px;font-size:12px;}
+  .sig-line{border-top:1px solid var(--ink);width:150px;margin:26px 0 4px auto;}
+  .modal-actions{display:flex;gap:8px;margin-top:14px;}
+  .modal-actions button{flex:1;padding:10px;border-radius:6px;border:none;cursor:pointer;font-size:13px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+  .stat-box{background:#fff;border-radius:8px;padding:14px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+  .stat-box .v{font-size:20px;font-weight:700;color:var(--maroon);}
+  .stat-box .l{font-size:11px;color:var(--muted);margin-top:2px;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;}
+  .toast.show{opacity:1;}
+  @media(max-width:520px){.row2{grid-template-columns:1fr;}}
+  @media print{
+    body *{visibility:hidden;}
+    .receipt-wrap,.receipt-wrap *{visibility:visible;}
+    .receipt-wrap{position:absolute;top:0;left:0;border:none;box-shadow:none;width:100%;max-height:none;}
+    .receipt-wrap .close,.modal-actions{display:none !important;}
+    .modal-overlay{position:static;background:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen">
+  <h2 data-i18n="appName">Chinakkathoor Temple — Office</h2>
+  <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+  <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+  <button onclick="doLogin()" data-i18n="signIn">Sign In</button>
+  <div id="loginError"></div>
+  <p class="muted" style="text-align:center;margin-top:10px;">Committee staff login only</p>
+</div>
+
+<!-- ============ MAIN APP (hidden until login) ============ -->
+<div id="appRoot" style="display:none;">
+  <header class="top">
+    <div>
+      <h1 data-i18n="appName">Sree Chinakkathoor Bhagavathi Temple</h1>
+      <small data-i18n="appSub">Donation Office · Palappuram, Ottapalam</small>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="lang-toggle" onclick="toggleLang()" id="langBtn">മലയാളം</button>
+      <button class="btn" onclick="doLogout()" data-i18n="logout">Logout</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-tab="newdon" data-i18n="tabNew">New Donation</button>
+    <button data-tab="ledger" data-i18n="tabLedger">Ledger</button>
+    <button data-tab="reports" data-i18n="tabReports">Reports</button>
+    <button data-tab="settings" data-i18n="tabSettings">Settings</button>
+  </nav>
+
+  <main>
+    <!-- ===== NEW DONATION TAB ===== -->
+    <section class="tab-panel active" id="tab-newdon">
+      <div class="card">
+        <label data-i18n="purpose">Donation Purpose</label>
+        <select id="fPurpose" onchange="onPurposeChange()"></select>
+
+        <div class="row2">
+          <div>
+            <label data-i18n="donorName">Donor Name</label>
+            <input id="fName" placeholder="Full name">
+          </div>
+          <div>
+            <label data-i18n="donorPhone">Phone</label>
+            <input id="fPhone" placeholder="10-digit mobile" maxlength="10">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label data-i18n="amount">Amount (₹)</label>
+            <input id="fAmount" type="number" min="1">
+          </div>
+          <div>
+            <label data-i18n="paymentMode">Payment Mode</label>
+            <select id="fMode">
+              <option value="Cash" data-i18n="modeCash">Cash</option>
+              <option value="UPI" data-i18n="modeUPI">UPI</option>
+            </select>
+          </div>
+        </div>
+
+        <label data-i18n="notes">Notes (optional)</label>
+        <textarea id="fNotes" rows="2"></textarea>
+
+        <button class="btn-primary" onclick="submitDonation()" data-i18n="generateReceipt">Save &amp; Generate Receipt</button>
+      </div>
+    </section>
+
+    <!-- ===== LEDGER TAB ===== -->
+    <section class="tab-panel" id="tab-ledger">
+      <div class="card">
+        <input class="search" id="ledgerSearch" placeholder="Search by name or phone..." oninput="renderLedger()">
+        <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th data-i18n="colDate">Date</th><th data-i18n="colReceipt">Receipt#</th>
+            <th data-i18n="colName">Name</th><th data-i18n="colPurpose">Purpose</th>
+            <th data-i18n="colMode">Mode</th><th data-i18n="colAmount">Amount</th><th></th>
+          </tr></thead>
+          <tbody id="ledgerBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REPORTS TAB ===== -->
+    <section class="tab-panel" id="tab-reports">
+      <div class="card">
+        <div class="row2">
+          <div>
+            <label data-i18n="reportYear">Year</label>
+            <select id="repYear" onchange="renderReports()"></select>
+          </div>
+          <div>
+            <label data-i18n="reportMonth">Month (optional)</label>
+            <select id="repMonth" onchange="renderReports()">
+              <option value="">All months</option>
+              <option value="0">January</option><option value="1">February</option>
+              <option value="2">March</option><option value="3">April</option>
+              <option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option>
+              <option value="8">September</option><option value="9">October</option>
+              <option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+        </div>
+        <div class="stat-grid" id="repStats" style="margin-top:16px;"></div>
+        <button class="btn-secondary" onclick="exportExcel()" data-i18n="exportExcel">Export to Excel</button>
+        <div style="overflow-x:auto;margin-top:14px;">
+        <table>
+          <thead><tr><th data-i18n="colPurpose">Purpose</th><th data-i18n="colCount">Count</th><th data-i18n="colAmount">Total (₹)</th></tr></thead>
+          <tbody id="repBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SETTINGS TAB ===== -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="card">
+        <h3 data-i18n="secretaryInfo">Secretary</h3>
+        <p><strong id="secName">Raman</strong> · <span id="secPhone">+91 90482 43196</span></p>
+        <p class="muted" data-i18n="taxNote">Donations to this temple may be eligible for tax exemption under Section 80G. Please retain your receipt.</p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="addUser">Add Committee User</h3>
+        <input id="newUserName" placeholder="Name" style="margin-bottom:8px;">
+        <input id="newUserEmail" type="email" placeholder="Email" style="margin-bottom:8px;">
+        <input id="newUserPass" type="password" placeholder="Temporary password (min 6 chars)" style="margin-bottom:8px;">
+        <button class="btn-secondary" onclick="addCommitteeUser()" data-i18n="addUserBtn">Add User</button>
+        <p class="muted" style="margin-top:8px;">New members can sign in immediately. To remove a member, use the Firebase Console → Authentication.</p>
+        <div id="addUserMsg" class="muted"></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="publicLinks">Public Pages</h3>
+        <p><a href="landing.html" target="_blank">Temple Home (landing.html)</a></p>
+        <p><a href="public.html" target="_blank">Donate (public.html)</a></p>
+        <p class="muted">Photo Gallery — disabled for now (needs Firebase Storage / Blaze plan)</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ RECEIPT MODAL ============ -->
+<div class="modal-overlay" id="receiptModal" style="display:none;">
+  <div class="receipt-wrap">
+    <button class="close" onclick="closeReceipt()">×</button>
+    <div class="receipt-header">
+      <div style="font-size:26px;">🛕</div>
+      <h2 data-i18n="templeName">Sree Chinakkathoor Bhagavathi Temple</h2>
+      <p data-i18n="templeAddr">Palappuram, Ottapalam, Kerala 679103</p>
+      <p data-i18n="committeeName">Thekkumangalam Desam Chinakkathoor Pooram Committee</p>
+    </div>
+    <div class="receipt-no" id="rReceiptNo"></div>
+    <div class="rline"><span class="lbl" data-i18n="colDate">Date</span><span class="val" id="rDate"></span></div>
+    <div class="rline"><span class="lbl" data-i18n="donorName">Donor Name</span><span class="val" id="rName"></span></div>
+    <div class="rline"><span class="lbl" data-i18n="donorPhone">Phone</span><span class="val" id="rPhone"></span></div>
+    <div class="rline"><span class="lbl" data-i18n="purpose">Purpose</span><span class="val" id="rPurpose"></span></div>
+    <div class="rline"><span class="lbl" data-i18n="paymentMode">Payment Mode</span><span class="val" id="rMode"></span></div>
+    <div class="receipt-amount">
+      <div class="num" id="rAmount"></div>
+      <div class="words" id="rAmountWords"></div>
+    </div>
+    <p class="muted" style="font-size:10px;" data-i18n="taxNote">Donations to this temple may be eligible for tax exemption under Section 80G. Please retain your receipt.</p>
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <span id="rSecretary">Raman</span><br>
+      <span data-i18n="secretaryTitle">Secretary</span>
+    </div>
+    <div class="receipt-footer" data-i18n="thankYou">Thank you for your generous contribution to the temple.</div>
+    <div class="modal-actions">
+      <button onclick="window.print()" style="background:var(--maroon);color:#fff;" data-i18n="printBtn">Print / Save as PDF</button>
+      <button onclick="closeReceipt()" style="background:#eee;" data-i18n="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ FIREBASE (compat SDK) ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ======================================================================
+   1) FIREBASE CONFIG — REPLACE WITH YOUR REAL VALUES
+   Firebase Console → Project Settings → General → "Your apps" → SDK setup
+   ====================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCYfO8427KfmTTNNS1G4rDPTrQVrqoUnFo",
+  authDomain: "chinakkathoor-temple.firebaseapp.com",
+  projectId: "chinakkathoor-temple",
+  storageBucket: "chinakkathoor-temple.firebasestorage.app",
+  messagingSenderId: "213864766388",
+  appId: "1:213864766388:web:bdfb3beeb4b1ddc82670e1"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ======================================================================
+   2) TEMPLE DONATION PURPOSES — edit amounts/names here to match your
+   tariff sheet exactly. These are placeholders — please verify all 14
+   amounts against the official Chinakkathoor Pooram tariff sheet.
+   ====================================================================== */
+const TEMPLE_ITEMS = [
+  { en: "Elephant (Aana)", ml: "ആന", amount: 25000 },
+  { en: "Elephant Decoration", ml: "ആന അലങ്കാരം", amount: 10000 },
+  { en: "Feast (Sadya)", ml: "സദ്യ", amount: 15000 },
+  { en: "Thayambaka", ml: "തായമ്പക", amount: 5000 },
+  { en: "Panchavadyam", ml: "പഞ്ചവാദ്യം", amount: 10000 },
+  { en: "Melam", ml: "മേളം", amount: 8000 },
+  { en: "Deshakoothu", ml: "ദേശകൂത്ത്", amount: 5000 },
+  { en: "Umbrellas (Kuda)", ml: "കുട", amount: 3000 },
+  { en: "Flowers (Pookkal)", ml: "പൂക്കൾ", amount: 2000 },
+  { en: "Pandal", ml: "പന്തൽ", amount: 15000 },
+  { en: "Oil (Enna)", ml: "എണ്ണ", amount: 501 },
+  { en: "Rice (Ari)", ml: "അരി", amount: 501 },
+  { en: "Main Contribution", ml: "മുഖ്യ വഴിപാട്", amount: 1001 },
+  { en: "General Donation (custom amount)", ml: "പൊതു സംഭാവന", amount: 0 }
+];
+const SECRETARY = { name: "Raman", nameML: "രാമൻ", phone: "+91 90482 43196" };
+
+/* ======================================================================
+   3) i18n DICTIONARY
+   ====================================================================== */
+const I18N = {
+  en: {
+    appName:"Sree Chinakkathoor Bhagavathi Temple", appSub:"Donation Office · Palappuram, Ottapalam",
+    signIn:"Sign In", logout:"Logout",
+    tabNew:"New Donation", tabLedger:"Ledger", tabReports:"Reports", tabSettings:"Settings",
+    purpose:"Donation Purpose", donorName:"Donor Name", donorPhone:"Phone", amount:"Amount (₹)",
+    paymentMode:"Payment Mode", modeCash:"Cash", modeUPI:"UPI", notes:"Notes (optional)",
+    generateReceipt:"Save & Generate Receipt",
+    colDate:"Date", colReceipt:"Receipt#", colName:"Name", colPurpose:"Purpose", colMode:"Mode",
+    colAmount:"Amount", colCount:"Count",
+    reportYear:"Year", reportMonth:"Month (optional)", exportExcel:"Export to Excel",
+    secretaryInfo:"Secretary", taxNote:"Donations to this temple may be eligible for tax exemption under Section 80G. Please retain your receipt.",
+    addUser:"Add Committee User", addUserBtn:"Add User", publicLinks:"Public Pages",
+    templeName:"Sree Chinakkathoor Bhagavathi Temple", templeAddr:"Palappuram, Ottapalam, Kerala 679103",
+    committeeName:"Thekkumangalam Desam Chinakkathoor Pooram Committee",
+    secretaryTitle:"Secretary", thankYou:"Thank you for your generous contribution to the temple.",
+    printBtn:"Print / Save as PDF", closeBtn:"Close"
+  },
+  ml: {
+    appName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", appSub:"ദാന ഓഫീസ് · പാലപ്പുറം, ഒറ്റപ്പാലം",
+    signIn:"സൈൻ ഇൻ", logout:"ലോഗൗട്ട്",
+    tabNew:"പുതിയ സംഭാവന", tabLedger:"ലെഡ്ജർ", tabReports:"റിപ്പോർട്ടുകൾ", tabSettings:"ക്രമീകരണങ്ങൾ",
+    purpose:"സംഭാവന ഇനം", donorName:"ദാതാവിന്റെ പേര്", donorPhone:"ഫോൺ", amount:"തുക (₹)",
+    paymentMode:"പണമടയ്ക്കൽ രീതി", modeCash:"ക്യാഷ്", modeUPI:"യുപിഐ", notes:"കുറിപ്പുകൾ (ഐച്ഛികം)",
+    generateReceipt:"സേവ് ചെയ്ത് രസീത് നൽകുക",
+    colDate:"തീയതി", colReceipt:"രസീത് നമ്പർ", colName:"പേര്", colPurpose:"ഇനം", colMode:"രീതി",
+    colAmount:"തുക", colCount:"എണ്ണം",
+    reportYear:"വർഷം", reportMonth:"മാസം (ഐച്ഛികം)", exportExcel:"എക്സൽ എക്സ്പോർട്ട്",
+    secretaryInfo:"സെക്രട്ടറി", taxNote:"ഈ ക്ഷേത്രത്തിലേക്കുള്ള സംഭാവനകൾക്ക് സെക്ഷൻ 80G പ്രകാരം നികുതി ഇളവ് ലഭിച്ചേക്കാം. രസീത് സൂക്ഷിക്കുക.",
+    addUser:"കമ്മിറ്റി അംഗത്തെ ചേർക്കുക", addUserBtn:"ചേർക്കുക", publicLinks:"പൊതു പേജുകൾ",
+    templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", templeAddr:"പാലപ്പുറം, ഒറ്റപ്പാലം, കേരളം 679103",
+    committeeName:"തെക്കുംമംഗലം ദേശം ചിനക്കത്തൂര് പൂരം കമ്മിറ്റി",
+    secretaryTitle:"സെക്രട്ടറി", thankYou:"ക്ഷേത്രത്തിലേക്കുള്ള നിങ്ങളുടെ ഉദാരമായ സംഭാവനയ്ക്ക് നന്ദി.",
+    printBtn:"പ്രിന്റ് / PDF ആയി സേവ് ചെയ്യുക", closeBtn:"അടയ്ക്കുക"
+  }
+};
+let currentLang = localStorage.getItem('scbt_lang') || 'en';
+const ML_MONTHS = ["ജനുവരി","ഫെബ്രുവരി","മാർച്ച്","ഏപ്രിൽ","മെയ്","ജൂൺ","ജൂലൈ","ഓഗസ്റ്റ്","സെപ്റ്റംബർ","ഒക്ടോബർ","നവംബർ","ഡിസംബർ"];
+const EN_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function applyLang(){
+  const dict = I18N[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(dict[key]) el.textContent = dict[key];
+  });
+  document.getElementById('langBtn').textContent = currentLang==='en' ? 'മലയാളം' : 'English';
+  document.getElementById('secName').textContent = currentLang==='en' ? SECRETARY.name : SECRETARY.nameML;
+  document.title = dict.appName;
+  populatePurposeOptions();
+  renderLedger(); renderReports();
+}
+function toggleLang(){
+  currentLang = currentLang==='en' ? 'ml' : 'en';
+  localStorage.setItem('scbt_lang', currentLang);
+  applyLang();
+}
+
+/* ======================================================================
+   4) MALAYALAM NUMBER-TO-WORDS (amount in words)
+   ====================================================================== */
+const EN_ONES=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+const EN_TENS=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+function amountToWordsEN(n){
+  if(n===0) return "Zero Rupees Only";
+  function two(x){ if(x<20) return EN_ONES[x]; return EN_TENS[Math.floor(x/10)]+(x%10?" "+EN_ONES[x%10]:""); }
+  function three(x){ if(x<100) return two(x); return EN_ONES[Math.floor(x/100)]+" Hundred"+(x%100?" "+two(x%100):""); }
+  let parts=[];
+  let crore=Math.floor(n/10000000); n%=10000000;
+  let lakh=Math.floor(n/100000); n%=100000;
+  let thousand=Math.floor(n/1000); n%=1000;
+  if(crore) parts.push(two(crore)+" Crore");
+  if(lakh) parts.push(two(lakh)+" Lakh");
+  if(thousand) parts.push(two(thousand)+" Thousand");
+  if(n) parts.push(three(n));
+  return parts.join(" ")+" Rupees Only";
+}
+const ML_ONES=["","ഒന്ന്","രണ്ട്","മൂന്ന്","നാല്","അഞ്ച്","ആറ്","ഏഴ്","എട്ട്","ഒൻപത്","പത്ത്","പതിനൊന്ന്","പന്ത്രണ്ട്","പതിമൂന്ന്","പതിനാല്","പതിനഞ്ച്","പതിനാറ്","പതിനേഴ്","പതിനെട്ട്","പത്തൊൻപത്"];
+const ML_TENS=["","","ഇരുപത്","മുപ്പത്","നാല്പത്","അമ്പത്","അറുപത്","എഴുപത്","എൺപത്","തൊണ്ണൂറ്"];
+function twoML(x){ if(x<20) return ML_ONES[x]; return ML_TENS[Math.floor(x/10)]+(x%10? " " + ML_ONES[x%10] : ""); }
+function threeML(x){ if(x<100) return twoML(x); return ML_ONES[Math.floor(x/100)]+" നൂറ്"+(x%100? " " + twoML(x%100) : ""); }
+function amountToWordsML(n){
+  if(n===0) return "പൂജ്യം രൂപ മാത്രം";
+  let parts=[];
+  let crore=Math.floor(n/10000000); n%=10000000;
+  let lakh=Math.floor(n/100000); n%=100000;
+  let thousand=Math.floor(n/1000); n%=1000;
+  if(crore) parts.push(twoML(crore)+" കോടി");
+  if(lakh) parts.push(twoML(lakh)+" ലക്ഷം");
+  if(thousand) parts.push(twoML(thousand)+"ായിരത്തി".replace("ത്തിയ","ത്തി"));
+  // fused thousand join: e.g. "പത്തു" + "ായിരം" style is complex; fall back to simple join with "ആയിരം"
+  if(thousand){
+    parts.pop();
+    parts.push(twoML(thousand)+" ആയിരം");
+  }
+  if(n) parts.push(threeML(n));
+  return parts.join(" ")+" രൂപ മാത്രം";
+}
+function amountToWords(n){ return currentLang==='en' ? amountToWordsEN(n) : amountToWordsML(n); }
+function formatDate(d){
+  const day=String(d.getDate()).padStart(2,'0');
+  const months = currentLang==='en'?EN_MONTHS:ML_MONTHS;
+  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/* ======================================================================
+   5) AUTH
+   ====================================================================== */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  document.getElementById('loginError').textContent='';
+  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    document.getElementById('loginError').textContent = err.message;
+  });
+}
+function doLogout(){ auth.signOut(); }
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appRoot').style.display='block';
+    startLedgerListener();
+  } else {
+    document.getElementById('loginScreen').style.display='block';
+    document.getElementById('appRoot').style.display='none';
+    if(unsubscribeLedger) unsubscribeLedger();
+  }
+});
+
+/* ======================================================================
+   6) TABS
+   ====================================================================== */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='reports') renderReports();
+  });
+});
+
+/* ======================================================================
+   7) DONATION PURPOSE DROPDOWN
+   ====================================================================== */
+function populatePurposeOptions(){
+  const sel=document.getElementById('fPurpose');
+  sel.innerHTML='';
+  TEMPLE_ITEMS.forEach((item,i)=>{
+    const opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent = (currentLang==='en'?item.en:item.ml) + (item.amount? ` — ₹${item.amount}` : '');
+    sel.appendChild(opt);
+  });
+  onPurposeChange();
+}
+function onPurposeChange(){
+  const idx=document.getElementById('fPurpose').value;
+  const item=TEMPLE_ITEMS[idx];
+  if(item && item.amount>0) document.getElementById('fAmount').value=item.amount;
+}
+
+/* ======================================================================
+   8) RECEIPT COUNTER (atomic, shared across all staff via Firestore transaction)
+   ====================================================================== */
+async function nextReceiptNo(){
+  const year=new Date().getFullYear();
+  const counterRef=db.collection('meta').doc('receiptCounter_'+year);
+  return db.runTransaction(async tx=>{
+    const doc=await tx.get(counterRef);
+    let seq = doc.exists ? doc.data().seq+1 : 1;
+    tx.set(counterRef, {seq}, {merge:true});
+    return `SCBT/${year}/${String(seq).padStart(4,'0')}`;
+  });
+}
+
+/* ======================================================================
+   9) SUBMIT DONATION → save to Firestore → show receipt
+   ====================================================================== */
+async function submitDonation(){
+  const idx=document.getElementById('fPurpose').value;
+  const item=TEMPLE_ITEMS[idx];
+  const name=document.getElementById('fName').value.trim();
+  const phone=document.getElementById('fPhone').value.trim();
+  const amount=Number(document.getElementById('fAmount').value);
+  const mode=document.getElementById('fMode').value;
+  const notes=document.getElementById('fNotes').value.trim();
+
+  if(!name || !amount || amount<=0){
+    showToast(currentLang==='en' ? 'Please enter donor name and a valid amount' : 'ദയവായി പേരും ശരിയായ തുകയും നൽകുക');
+    return;
+  }
+  try{
+    const receiptNo = await nextReceiptNo();
+    const now = new Date();
+    const record = {
+      receiptNo, name, phone,
+      purposeEN: item.en, purposeML: item.ml,
+      amount, mode, notes,
+      date: firebase.firestore.Timestamp.fromDate(now),
+      createdBy: auth.currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await db.collection('donations').add(record);
+    showReceipt(record, now);
+    document.getElementById('fName').value='';
+    document.getElementById('fPhone').value='';
+    document.getElementById('fNotes').value='';
+    onPurposeChange();
+  }catch(e){
+    showToast('Error: '+e.message);
+  }
+}
+
+function showReceipt(record, dateObj){
+  document.getElementById('rReceiptNo').textContent = record.receiptNo;
+  document.getElementById('rDate').textContent = formatDate(dateObj);
+  document.getElementById('rName').textContent = record.name;
+  document.getElementById('rPhone').textContent = record.phone || '—';
+  document.getElementById('rPurpose').textContent = currentLang==='en' ? record.purposeEN : record.purposeML;
+  document.getElementById('rMode').textContent = I18N[currentLang]['mode'+record.mode] || record.mode;
+  document.getElementById('rAmount').textContent = '₹ '+Number(record.amount).toLocaleString('en-IN');
+  document.getElementById('rAmountWords').textContent = amountToWords(Number(record.amount));
+  document.getElementById('rSecretary').textContent = currentLang==='en' ? SECRETARY.name : SECRETARY.nameML;
+  document.getElementById('receiptModal').style.display='flex';
+}
+function closeReceipt(){ document.getElementById('receiptModal').style.display='none'; }
+
+/* ======================================================================
+   10) LIVE LEDGER (Firestore listener, bounded to most recent 300)
+   ====================================================================== */
+let allDonations=[];
+let unsubscribeLedger=null;
+function startLedgerListener(){
+  if(unsubscribeLedger) unsubscribeLedger();
+  unsubscribeLedger = db.collection('donations')
+    .orderBy('date','desc')
+    .limit(300)
+    .onSnapshot(snap=>{
+      allDonations = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderLedger();
+      populateYearOptions();
+    }, err=>console.error(err));
+}
+function renderLedger(){
+  const body=document.getElementById('ledgerBody');
+  if(!body) return;
+  const q=(document.getElementById('ledgerSearch')?.value||'').toLowerCase();
+  body.innerHTML='';
+  allDonations
+    .filter(r=> !q || (r.name||'').toLowerCase().includes(q) || (r.phone||'').includes(q))
+    .forEach(r=>{
+      const tr=document.createElement('tr');
+      const d = r.date && r.date.toDate ? r.date.toDate() : new Date();
+      tr.innerHTML = `<td>${formatDate(d)}</td><td>${r.receiptNo}</td><td>${r.name}</td>
+        <td>${currentLang==='en'?r.purposeEN:r.purposeML}</td>
+        <td><span class="badge">${r.mode}</span></td>
+        <td class="amt">₹${Number(r.amount).toLocaleString('en-IN')}</td>
+        <td><button class="btn-secondary" onclick='reprintFromLedger(${JSON.stringify(r).replace(/'/g,"&apos;")})'>🖨️</button></td>`;
+      body.appendChild(tr);
+    });
+}
+function reprintFromLedger(r){
+  const d = r.date && r.date.seconds ? new Date(r.date.seconds*1000) : new Date();
+  showReceipt(r, d);
+}
+
+/* ======================================================================
+   11) REPORTS
+   ====================================================================== */
+function populateYearOptions(){
+  const sel=document.getElementById('repYear');
+  if(!sel || sel.dataset.filled) return;
+  const years=new Set(allDonations.map(r=>{
+    const d=r.date && r.date.toDate ? r.date.toDate() : new Date();
+    return d.getFullYear();
+  }));
+  years.add(new Date().getFullYear());
+  [...years].sort((a,b)=>b-a).forEach(y=>{
+    const opt=document.createElement('option'); opt.value=y; opt.textContent=y;
+    sel.appendChild(opt);
+  });
+  sel.dataset.filled='1';
+}
+function renderReports(){
+  const yearSel=document.getElementById('repYear');
+  const monthSel=document.getElementById('repMonth');
+  if(!yearSel) return;
+  const year=Number(yearSel.value||new Date().getFullYear());
+  const month=monthSel.value===''? null : Number(monthSel.value);
+  const filtered = allDonations.filter(r=>{
+    const d=r.date && r.date.toDate ? r.date.toDate() : new Date();
+    return d.getFullYear()===year && (month===null || d.getMonth()===month);
+  });
+  const total = filtered.reduce((s,r)=>s+Number(r.amount),0);
+  const cash = filtered.filter(r=>r.mode==='Cash').reduce((s,r)=>s+Number(r.amount),0);
+  const upi = filtered.filter(r=>r.mode==='UPI').reduce((s,r)=>s+Number(r.amount),0);
+  document.getElementById('repStats').innerHTML = `
+    <div class="stat-box"><div class="v">₹${total.toLocaleString('en-IN')}</div><div class="l">Total</div></div>
+    <div class="stat-box"><div class="v">${filtered.length}</div><div class="l">Donations</div></div>
+    <div class="stat-box"><div class="v">₹${cash.toLocaleString('en-IN')}</div><div class="l">Cash</div></div>
+    <div class="stat-box"><div class="v">₹${upi.toLocaleString('en-IN')}</div><div class="l">UPI</div></div>`;
+  const byPurpose={};
+  filtered.forEach(r=>{
+    const key = currentLang==='en'?r.purposeEN:r.purposeML;
+    if(!byPurpose[key]) byPurpose[key]={count:0,total:0};
+    byPurpose[key].count++; byPurpose[key].total+=Number(r.amount);
+  });
+  const body=document.getElementById('repBody');
+  body.innerHTML='';
+  Object.entries(byPurpose).forEach(([k,v])=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${k}</td><td>${v.count}</td><td class="amt">₹${v.total.toLocaleString('en-IN')}</td>`;
+    body.appendChild(tr);
+  });
+}
+function exportExcel(){
+  const year=Number(document.getElementById('repYear').value||new Date().getFullYear());
+  const month=document.getElementById('repMonth').value;
+  const filtered = allDonations.filter(r=>{
+    const d=r.date && r.date.toDate ? r.date.toDate() : new Date();
+    return d.getFullYear()===year && (month===''||d.getMonth()===Number(month));
+  });
+  const rows = filtered.map(r=>{
+    const d=r.date && r.date.toDate ? r.date.toDate() : new Date();
+    return {
+      Date: formatDate(d), Receipt: r.receiptNo, Name: r.name, Phone: r.phone,
+      Purpose: r.purposeEN, Mode: r.mode, Amount: r.amount, Notes: r.notes||'', RecordedBy: r.createdBy||''
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Donations");
+  XLSX.writeFile(wb, `SCBT_Donations_${year}${month!==''?'_'+(Number(month)+1):''}.xlsx`);
+}
+
+/* ======================================================================
+   12) ADD COMMITTEE USER (secondary Firebase app instance so the current
+   admin stays logged in)
+   ====================================================================== */
+async function addCommitteeUser(){
+  const name=document.getElementById('newUserName').value.trim();
+  const email=document.getElementById('newUserEmail').value.trim();
+  const pass=document.getElementById('newUserPass').value;
+  const msg=document.getElementById('addUserMsg');
+  if(!email || pass.length<6){ msg.textContent='Enter a valid email and a password of at least 6 characters.'; return; }
+  try{
+    const secondaryApp = firebase.apps.find(a=>a.name==='Secondary') || firebase.initializeApp(firebaseConfig, 'Secondary');
+    const secondaryAuth = firebase.auth(secondaryApp);
+    await secondaryAuth.createUserWithEmailAndPassword(email, pass);
+    if(name && secondaryAuth.currentUser) await secondaryAuth.currentUser.updateProfile({displayName:name});
+    await secondaryAuth.signOut();
+    msg.textContent = `User ${email} created successfully.`;
+    document.getElementById('newUserName').value='';
+    document.getElementById('newUserEmail').value='';
+    document.getElementById('newUserPass').value='';
+  }catch(e){
+    msg.textContent = 'Error: '+e.message;
+  }
+}
+
+/* ======================================================================
+   13) INIT
+   ====================================================================== */
+applyLang();
+
+/* ======================================================================
+   14) PWA service worker registration
+   ====================================================================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

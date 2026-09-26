@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sree Chinakkathoor Bhagavathi Temple</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7a1f1f">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{--maroon:#7a1f1f;--gold:#c8961e;--gold-light:#f6e7c3;--bg:#faf6ee;--ink:#2b2118;--muted:#7a6f60;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:linear-gradient(135deg,var(--maroon),#5a1414);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  header h1{font-size:18px;margin:0;}
+  header small{display:block;opacity:.85;font-size:12px;font-weight:400;}
+  .lang-toggle{cursor:pointer;border:1px solid var(--gold);background:transparent;color:#fff;padding:6px 12px;border-radius:6px;font-size:13px;}
+  main{max-width:800px;margin:0 auto;padding:16px;}
+  .hero{text-align:center;margin:20px 0;}
+  .hero img{max-width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+  .hero-caption{color:var(--muted);font-size:13px;margin-top:8px;}
+  .links{display:flex;gap:12px;justify-content:center;margin:20px 0;flex-wrap:wrap;}
+  .links a{background:var(--maroon);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;}
+  .links a.alt{background:#fff;color:var(--maroon);border:1px solid var(--maroon);}
+  .card{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+  .card h2{color:var(--maroon);margin-top:0;font-size:17px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{padding:8px;text-align:left;border-bottom:1px solid #eee;}
+  th{color:var(--muted);}
+  .amt{font-weight:600;color:var(--maroon);text-align:right;}
+  footer{text-align:center;padding:20px;color:var(--muted);font-size:12px;}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 data-i18n="templeName">Sree Chinakkathoor Bhagavathi Temple</h1>
+    <small data-i18n="templeAddr">Palappuram, Ottapalam, Kerala 679103</small>
+  </div>
+  <button class="lang-toggle" onclick="toggleLang()" id="langBtn">മലയാളം</button>
+</header>
+
+<main>
+  <div class="hero">
+    <!-- Replace pooram-poster-2026.jpg with your actual poster image filename -->
+    <img src="pooram-poster-2026.jpg" alt="Chinakkathoor Pooram Poster" onerror="this.style.display='none'">
+    <p class="hero-caption" data-i18n="heroCaption">Chinakkathoor Pooram — Annual Temple Festival</p>
+  </div>
+
+  <div class="links">
+    <a href="public.html" data-i18n="donateLink">Donate</a>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="aboutTitle">About Chinakkathoor Pooram</h2>
+    <p data-i18n="aboutText">Chinakkathoor Pooram is the annual festival of Sree Chinakkathoor Bhagavathi Temple, celebrated with elephants, traditional percussion ensembles, and processions organized by the Thekkumangalam Desam Chinakkathoor Pooram Committee. Devotees and well-wishers are invited to contribute towards the festival through the donation categories below.</p>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="tariffTitle">Donation Tariff</h2>
+    <table>
+      <thead><tr><th data-i18n="colPurpose">Item</th><th class="amt" data-i18n="colAmount">Amount (₹)</th></tr></thead>
+      <tbody id="tariffBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer data-i18n="footerNote">Thekkumangalam Desam Chinakkathoor Pooram Committee · Secretary: Raman · +91 90482 43196</footer>
+
+<script>
+const TEMPLE_ITEMS = [
+  { en: "Elephant (Aana)", ml: "ആന", amount: 25000 },
+  { en: "Elephant Decoration", ml: "ആന അലങ്കാരം", amount: 10000 },
+  { en: "Feast (Sadya)", ml: "സദ്യ", amount: 15000 },
+  { en: "Thayambaka", ml: "തായമ്പക", amount: 5000 },
+  { en: "Panchavadyam", ml: "പഞ്ചവാദ്യം", amount: 10000 },
+  { en: "Melam", ml: "മേളം", amount: 8000 },
+  { en: "Deshakoothu", ml: "ദേശകൂത്ത്", amount: 5000 },
+  { en: "Umbrellas (Kuda)", ml: "കുട", amount: 3000 },
+  { en: "Flowers (Pookkal)", ml: "പൂക്കൾ", amount: 2000 },
+  { en: "Pandal", ml: "പന്തൽ", amount: 15000 },
+  { en: "Oil (Enna)", ml: "എണ്ണ", amount: 501 },
+  { en: "Rice (Ari)", ml: "അരി", amount: 501 },
+  { en: "Main Contribution", ml: "മുഖ്യ വഴിപാട്", amount: 1001 },
+  { en: "General Donation (any amount)", ml: "പൊതു സംഭാവന (ഏത് തുകയും)", amount: null }
+];
+const I18N = {
+  en:{templeName:"Sree Chinakkathoor Bhagavathi Temple",templeAddr:"Palappuram, Ottapalam, Kerala 679103",
+    heroCaption:"Chinakkathoor Pooram — Annual Temple Festival",donateLink:"Donate & Upload Photos",galleryLink:"Photo Gallery",
+    aboutTitle:"About Chinakkathoor Pooram",
+    aboutText:"Chinakkathoor Pooram is the annual festival of Sree Chinakkathoor Bhagavathi Temple, celebrated with elephants, traditional percussion ensembles, and processions organized by the Thekkumangalam Desam Chinakkathoor Pooram Committee. Devotees and well-wishers are invited to contribute towards the festival through the donation categories below.",
+    tariffTitle:"Donation Tariff",colPurpose:"Item",colAmount:"Amount (₹)",
+    footerNote:"Thekkumangalam Desam Chinakkathoor Pooram Committee · Secretary: Raman · +91 90482 43196"},
+  ml:{templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം",templeAddr:"പാലപ്പുറം, ഒറ്റപ്പാലം, കേരളം 679103",
+    heroCaption:"ചിനക്കത്തൂര് പൂരം — വാർഷിക ക്ഷേത്രോത്സവം",donateLink:"സംഭാവന നൽകുക & ഫോട്ടോ അപ്‌ലോഡ്",galleryLink:"ഫോട്ടോ ഗാലറി",
+    aboutTitle:"ചിനക്കത്തൂര് പൂരത്തെക്കുറിച്ച്",
+    aboutText:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രത്തിലെ വാർഷിക ഉത്സവമാണ് ചിനക്കത്തൂര് പൂരം. ആനകൾ, പഞ്ചവാദ്യം, എഴുന്നള്ളത്ത് എന്നിവയോടെ തെക്കുംമംഗലം ദേശം ചിനക്കത്തൂര് പൂരം കമ്മിറ്റിയുടെ നേതൃത്വത്തിൽ ആഘോഷിക്കുന്നു. ഭക്തരെയും ശുഭാകാംക്ഷികളെയും താഴെ കൊടുത്തിരിക്കുന്ന ഇനങ്ങളിൽ സംഭാവന നൽകാൻ ക്ഷണിക്കുന്നു.",
+    tariffTitle:"സംഭാവന നിരക്കുകൾ",colPurpose:"ഇനം",colAmount:"തുക (₹)",
+    footerNote:"തെക്കുംമംഗലം ദേശം ചിനക്കത്തൂര് പൂരം കമ്മിറ്റി · സെക്രട്ടറി: രാമൻ · +91 90482 43196"}
+};
+let currentLang = localStorage.getItem('scbt_lang') || 'en';
+function renderTariff(){
+  const body=document.getElementById('tariffBody');
+  body.innerHTML='';
+  TEMPLE_ITEMS.forEach(item=>{
+    const tr=document.createElement('tr');
+    const name = currentLang==='en'?item.en:item.ml;
+    const amt = item.amount? '₹'+item.amount.toLocaleString('en-IN') : (currentLang==='en'?'Any amount':'ഏത് തുകയും');
+    tr.innerHTML=`<td>${name}</td><td class="amt">${amt}</td>`;
+    body.appendChild(tr);
+  });
+}
+function applyLang(){
+  const dict=I18N[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ if(dict[el.dataset.i18n]) el.textContent=dict[el.dataset.i18n]; });
+  document.getElementById('langBtn').textContent = currentLang==='en' ? 'മലയാളം' : 'English';
+  document.title = dict.templeName;
+  renderTariff();
+}
+function toggleLang(){
+  currentLang = currentLang==='en'?'ml':'en';
+  localStorage.setItem('scbt_lang', currentLang);
+  applyLang();
+}
+applyLang();
+</script>
+</body>
+</html>
