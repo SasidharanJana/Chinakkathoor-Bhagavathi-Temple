@@ -19,6 +19,11 @@
   .hero{text-align:center;margin:20px 0;}
   .hero img{max-width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);}
   .hero-caption{color:var(--muted);font-size:13px;margin-top:8px;}
+  .photo-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:14px;}
+  .photo-strip img{width:100%;height:130px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.1);}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;padding:16px;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:100%;max-height:90vh;border-radius:8px;}
   .links{display:flex;gap:12px;justify-content:center;margin:20px 0;flex-wrap:wrap;}
   .links a{background:var(--maroon);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;}
   .links a.alt{background:#fff;color:var(--maroon);border:1px solid var(--maroon);}
@@ -35,15 +40,14 @@
 <header>
   <div>
     <h1 data-i18n="templeName">Sree Chinakkathoor Bhagavathi Temple</h1>
-    <small data-i18n="templeAddr">Palappuram, Ottapalam, Kerala 679103</small>
+    <small data-i18n="templeAddr">Thekkumangalam, Ottapalam, Kerala 679103</small>
   </div>
   <button class="lang-toggle" onclick="toggleLang()" id="langBtn">മലയാളം</button>
 </header>
 
 <main>
   <div class="hero">
-    <!-- Replace pooram-poster-2026.jpg with your actual poster image filename -->
-    <img src="pooram-poster-2026.jpg" alt="Chinakkathoor Pooram Poster" onerror="this.style.display='none'">
+    <img src="temple-building-1.jpg" alt="Sree Chinakkathoor Bhagavathi Temple">
     <p class="hero-caption" data-i18n="heroCaption">Chinakkathoor Pooram — Annual Temple Festival</p>
   </div>
 
@@ -54,6 +58,13 @@
   <div class="card">
     <h2 data-i18n="aboutTitle">About Chinakkathoor Pooram</h2>
     <p data-i18n="aboutText">Chinakkathoor Pooram is the annual festival of Sree Chinakkathoor Bhagavathi Temple, celebrated with elephants, traditional percussion ensembles, and processions organized by the Thekkumangalam Desam Chinakkathoor Pooram Committee. Devotees and well-wishers are invited to contribute towards the festival through the donation categories below.</p>
+    <div class="photo-strip" id="photoStrip">
+      <img src="temple-building-2.jpg" onclick="openLightbox(this.src)" alt="Temple">
+      <img src="pooram-elephants.jpg" onclick="openLightbox(this.src)" alt="Pooram elephants">
+      <img src="pooram-kuthira-1.jpg" onclick="openLightbox(this.src)" alt="Pooram Kuthira">
+      <img src="pooram-theyyam.jpg" onclick="openLightbox(this.src)" alt="Pooram performers">
+      <img src="pooram-kuthira-2.jpg" onclick="openLightbox(this.src)" alt="Pooram Kuthira procession">
+    </div>
   </div>
 
   <div class="card">
@@ -66,6 +77,16 @@
 </main>
 
 <footer data-i18n="footerNote">Thekkumangalam Desam Chinakkathoor Pooram Committee · Secretary: Raman · +91 90482 43196</footer>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lightboxImg" src="">
+</div>
+<script>
+function openLightbox(src){
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').classList.add('show');
+}
+</script>
 
 <script>
 const TEMPLE_ITEMS = [
@@ -85,13 +106,13 @@ const TEMPLE_ITEMS = [
   { en: "General Donation (any amount)", ml: "പൊതു സംഭാവന (ഏത് തുകയും)", amount: null }
 ];
 const I18N = {
-  en:{templeName:"Sree Chinakkathoor Bhagavathi Temple",templeAddr:"Palappuram, Ottapalam, Kerala 679103",
+  en:{templeName:"Sree Chinakkathoor Bhagavathi Temple",templeAddr:"Thekkumangalam, Ottapalam, Kerala 679103",
     heroCaption:"Chinakkathoor Pooram — Annual Temple Festival",donateLink:"Donate & Upload Photos",galleryLink:"Photo Gallery",
     aboutTitle:"About Chinakkathoor Pooram",
     aboutText:"Chinakkathoor Pooram is the annual festival of Sree Chinakkathoor Bhagavathi Temple, celebrated with elephants, traditional percussion ensembles, and processions organized by the Thekkumangalam Desam Chinakkathoor Pooram Committee. Devotees and well-wishers are invited to contribute towards the festival through the donation categories below.",
     tariffTitle:"Donation Tariff",colPurpose:"Item",colAmount:"Amount (₹)",
     footerNote:"Thekkumangalam Desam Chinakkathoor Pooram Committee · Secretary: Raman · +91 90482 43196"},
-  ml:{templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം",templeAddr:"പാലപ്പുറം, ഒറ്റപ്പാലം, കേരളം 679103",
+  ml:{templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം",templeAddr:"തെക്കുംമംഗലം, ഒറ്റപ്പാലം, കേരളം 679103",
     heroCaption:"ചിനക്കത്തൂര് പൂരം — വാർഷിക ക്ഷേത്രോത്സവം",donateLink:"സംഭാവന നൽകുക & ഫോട്ടോ അപ്‌ലോഡ്",galleryLink:"ഫോട്ടോ ഗാലറി",
     aboutTitle:"ചിനക്കത്തൂര് പൂരത്തെക്കുറിച്ച്",
     aboutText:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രത്തിലെ വാർഷിക ഉത്സവമാണ് ചിനക്കത്തൂര് പൂരം. ആനകൾ, പഞ്ചവാദ്യം, എഴുന്നള്ളത്ത് എന്നിവയോടെ തെക്കുംമംഗലം ദേശം ചിനക്കത്തൂര് പൂരം കമ്മിറ്റിയുടെ നേതൃത്വത്തിൽ ആഘോഷിക്കുന്നു. ഭക്തരെയും ശുഭാകാംക്ഷികളെയും താഴെ കൊടുത്തിരിക്കുന്ന ഇനങ്ങളിൽ സംഭാവന നൽകാൻ ക്ഷണിക്കുന്നു.",

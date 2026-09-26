@@ -95,7 +95,7 @@
   <header class="top">
     <div>
       <h1 data-i18n="appName">Sree Chinakkathoor Bhagavathi Temple</h1>
-      <small data-i18n="appSub">Donation Office · Palappuram, Ottapalam</small>
+      <small data-i18n="appSub">Donation Office · Thekkumangalam, Ottapalam</small>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="lang-toggle" onclick="toggleLang()" id="langBtn">മലയാളം</button>
@@ -145,7 +145,9 @@
         <label data-i18n="notes">Notes (optional)</label>
         <textarea id="fNotes" rows="2"></textarea>
 
-        <button class="btn-primary" onclick="submitDonation()" data-i18n="generateReceipt">Save &amp; Generate Receipt</button>
+        <input type="hidden" id="fEditId" value="">
+        <button class="btn-primary" id="fSubmitBtn" onclick="submitDonation()" data-i18n="generateReceipt">Save &amp; Generate Receipt</button>
+        <button class="btn-secondary" id="fCancelEditBtn" onclick="cancelEdit()" style="display:none;margin-left:8px;" data-i18n="cancelEdit">Cancel Edit</button>
       </div>
     </section>
 
@@ -231,7 +233,7 @@
     <div class="receipt-header">
       <div style="font-size:26px;">🛕</div>
       <h2 data-i18n="templeName">Sree Chinakkathoor Bhagavathi Temple</h2>
-      <p data-i18n="templeAddr">Palappuram, Ottapalam, Kerala 679103</p>
+      <p data-i18n="templeAddr">Thekkumangalam, Ottapalam, Kerala 679103</p>
       <p data-i18n="committeeName">Thekkumangalam Desam Chinakkathoor Pooram Committee</p>
     </div>
     <div class="receipt-no" id="rReceiptNo"></div>
@@ -310,35 +312,35 @@ const SECRETARY = { name: "Raman", nameML: "രാമൻ", phone: "+91 90482 431
    ====================================================================== */
 const I18N = {
   en: {
-    appName:"Sree Chinakkathoor Bhagavathi Temple", appSub:"Donation Office · Palappuram, Ottapalam",
+    appName:"Sree Chinakkathoor Bhagavathi Temple", appSub:"Donation Office · Thekkumangalam, Ottapalam",
     signIn:"Sign In", logout:"Logout",
     tabNew:"New Donation", tabLedger:"Ledger", tabReports:"Reports", tabSettings:"Settings",
     purpose:"Donation Purpose", donorName:"Donor Name", donorPhone:"Phone", amount:"Amount (₹)",
     paymentMode:"Payment Mode", modeCash:"Cash", modeUPI:"UPI", notes:"Notes (optional)",
-    generateReceipt:"Save & Generate Receipt",
+    generateReceipt:"Save & Generate Receipt", cancelEdit:"Cancel Edit",
     colDate:"Date", colReceipt:"Receipt#", colName:"Name", colPurpose:"Purpose", colMode:"Mode",
     colAmount:"Amount", colCount:"Count",
     reportYear:"Year", reportMonth:"Month (optional)", exportExcel:"Export to Excel",
     secretaryInfo:"Secretary", taxNote:"Donations to this temple may be eligible for tax exemption under Section 80G. Please retain your receipt.",
     addUser:"Add Committee User", addUserBtn:"Add User", publicLinks:"Public Pages",
-    templeName:"Sree Chinakkathoor Bhagavathi Temple", templeAddr:"Palappuram, Ottapalam, Kerala 679103",
+    templeName:"Sree Chinakkathoor Bhagavathi Temple", templeAddr:"Thekkumangalam, Ottapalam, Kerala 679103",
     committeeName:"Thekkumangalam Desam Chinakkathoor Pooram Committee",
     secretaryTitle:"Secretary", thankYou:"Thank you for your generous contribution to the temple.",
     printBtn:"Print / Save as PDF", closeBtn:"Close"
   },
   ml: {
-    appName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", appSub:"ദാന ഓഫീസ് · പാലപ്പുറം, ഒറ്റപ്പാലം",
+    appName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", appSub:"ദാന ഓഫീസ് · തെക്കുംമംഗലം, ഒറ്റപ്പാലം",
     signIn:"സൈൻ ഇൻ", logout:"ലോഗൗട്ട്",
     tabNew:"പുതിയ സംഭാവന", tabLedger:"ലെഡ്ജർ", tabReports:"റിപ്പോർട്ടുകൾ", tabSettings:"ക്രമീകരണങ്ങൾ",
     purpose:"സംഭാവന ഇനം", donorName:"ദാതാവിന്റെ പേര്", donorPhone:"ഫോൺ", amount:"തുക (₹)",
     paymentMode:"പണമടയ്ക്കൽ രീതി", modeCash:"ക്യാഷ്", modeUPI:"യുപിഐ", notes:"കുറിപ്പുകൾ (ഐച്ഛികം)",
-    generateReceipt:"സേവ് ചെയ്ത് രസീത് നൽകുക",
+    generateReceipt:"സേവ് ചെയ്ത് രസീത് നൽകുക", cancelEdit:"തിരുത്തൽ റദ്ദാക്കുക",
     colDate:"തീയതി", colReceipt:"രസീത് നമ്പർ", colName:"പേര്", colPurpose:"ഇനം", colMode:"രീതി",
     colAmount:"തുക", colCount:"എണ്ണം",
     reportYear:"വർഷം", reportMonth:"മാസം (ഐച്ഛികം)", exportExcel:"എക്സൽ എക്സ്പോർട്ട്",
     secretaryInfo:"സെക്രട്ടറി", taxNote:"ഈ ക്ഷേത്രത്തിലേക്കുള്ള സംഭാവനകൾക്ക് സെക്ഷൻ 80G പ്രകാരം നികുതി ഇളവ് ലഭിച്ചേക്കാം. രസീത് സൂക്ഷിക്കുക.",
     addUser:"കമ്മിറ്റി അംഗത്തെ ചേർക്കുക", addUserBtn:"ചേർക്കുക", publicLinks:"പൊതു പേജുകൾ",
-    templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", templeAddr:"പാലപ്പുറം, ഒറ്റപ്പാലം, കേരളം 679103",
+    templeName:"ശ്രീ ചിനക്കത്തൂര് ഭഗവതി ക്ഷേത്രം", templeAddr:"തെക്കുംമംഗലം, ഒറ്റപ്പാലം, കേരളം 679103",
     committeeName:"തെക്കുംമംഗലം ദേശം ചിനക്കത്തൂര് പൂരം കമ്മിറ്റി",
     secretaryTitle:"സെക്രട്ടറി", thankYou:"ക്ഷേത്രത്തിലേക്കുള്ള നിങ്ങളുടെ ഉദാരമായ സംഭാവനയ്ക്ക് നന്ദി.",
     printBtn:"പ്രിന്റ് / PDF ആയി സേവ് ചെയ്യുക", closeBtn:"അടയ്ക്കുക"
@@ -500,28 +502,94 @@ async function submitDonation(){
   const amount=Number(document.getElementById('fAmount').value);
   const mode=document.getElementById('fMode').value;
   const notes=document.getElementById('fNotes').value.trim();
+  const editId=document.getElementById('fEditId').value;
 
   if(!name || !amount || amount<=0){
     showToast(currentLang==='en' ? 'Please enter donor name and a valid amount' : 'ദയവായി പേരും ശരിയായ തുകയും നൽകുക');
     return;
   }
   try{
-    const receiptNo = await nextReceiptNo();
-    const now = new Date();
-    const record = {
-      receiptNo, name, phone,
-      purposeEN: item.en, purposeML: item.ml,
-      amount, mode, notes,
-      date: firebase.firestore.Timestamp.fromDate(now),
-      createdBy: auth.currentUser.email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('donations').add(record);
-    showReceipt(record, now);
-    document.getElementById('fName').value='';
-    document.getElementById('fPhone').value='';
-    document.getElementById('fNotes').value='';
-    onPurposeChange();
+    if(editId){
+      // ===== EDIT MODE: update existing record, keep original receipt# and date =====
+      const existing = allDonations.find(r=>r.id===editId);
+      const origDate = existing && existing.date && existing.date.toDate ? existing.date.toDate() : new Date();
+      const updated = {
+        name, phone, purposeEN: item.en, purposeML: item.ml,
+        amount, mode, notes,
+        edited: true,
+        editedBy: auth.currentUser.email,
+        editedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('donations').doc(editId).update(updated);
+      showReceipt({...existing, ...updated, receiptNo: existing.receiptNo}, origDate);
+      cancelEdit();
+      showToast(currentLang==='en' ? 'Donation updated' : 'സംഭാവന അപ്ഡേറ്റ് ചെയ്തു');
+    } else {
+      // ===== NEW DONATION =====
+      const receiptNo = await nextReceiptNo();
+      const now = new Date();
+      const record = {
+        receiptNo, name, phone,
+        purposeEN: item.en, purposeML: item.ml,
+        amount, mode, notes,
+        date: firebase.firestore.Timestamp.fromDate(now),
+        createdBy: auth.currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('donations').add(record);
+      showReceipt(record, now);
+      document.getElementById('fName').value='';
+      document.getElementById('fPhone').value='';
+      document.getElementById('fNotes').value='';
+      onPurposeChange();
+    }
+  }catch(e){
+    showToast('Error: '+e.message);
+  }
+}
+
+function editDonation(r){
+  // Switch to the New Donation tab
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="newdon"]').classList.add('active');
+  document.getElementById('tab-newdon').classList.add('active');
+
+  // Find and select the matching purpose option (match by English name)
+  const idx = TEMPLE_ITEMS.findIndex(it=>it.en===r.purposeEN);
+  document.getElementById('fPurpose').value = idx>=0?idx:0;
+  document.getElementById('fName').value = r.name || '';
+  document.getElementById('fPhone').value = r.phone || '';
+  document.getElementById('fAmount').value = r.amount || '';
+  document.getElementById('fMode').value = r.mode || 'Cash';
+  document.getElementById('fNotes').value = r.notes || '';
+  document.getElementById('fEditId').value = r.id;
+
+  const dict=I18N[currentLang];
+  document.getElementById('fSubmitBtn').textContent = currentLang==='en' ? 'Update Donation' : 'സംഭാവന അപ്ഡേറ്റ് ചെയ്യുക';
+  document.getElementById('fCancelEditBtn').style.display='inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function cancelEdit(){
+  document.getElementById('fEditId').value='';
+  document.getElementById('fName').value='';
+  document.getElementById('fPhone').value='';
+  document.getElementById('fAmount').value='';
+  document.getElementById('fNotes').value='';
+  document.getElementById('fSubmitBtn').textContent = I18N[currentLang].generateReceipt;
+  document.getElementById('fCancelEditBtn').style.display='none';
+  onPurposeChange();
+}
+
+async function deleteDonation(id){
+  const confirmMsg = currentLang==='en'
+    ? 'Delete this donation record permanently? This cannot be undone.'
+    : 'ഈ സംഭാവന രേഖ ശാശ്വതമായി ഇല്ലാതാക്കണോ? ഇത് പഴയപടിയാക്കാൻ കഴിയില്ല.';
+  if(!confirm(confirmMsg)) return;
+  try{
+    await db.collection('donations').doc(id).delete();
+    showToast(currentLang==='en' ? 'Donation deleted' : 'സംഭാവന ഇല്ലാതാക്കി');
   }catch(e){
     showToast('Error: '+e.message);
   }
@@ -567,11 +635,16 @@ function renderLedger(){
     .forEach(r=>{
       const tr=document.createElement('tr');
       const d = r.date && r.date.toDate ? r.date.toDate() : new Date();
-      tr.innerHTML = `<td>${formatDate(d)}</td><td>${r.receiptNo}</td><td>${r.name}</td>
+      const dataAttr = JSON.stringify(r).replace(/'/g,"&apos;");
+      tr.innerHTML = `<td>${formatDate(d)}</td><td>${r.receiptNo}</td><td>${r.name}${r.edited?' <span class="badge" title="Edited">✎</span>':''}</td>
         <td>${currentLang==='en'?r.purposeEN:r.purposeML}</td>
         <td><span class="badge">${r.mode}</span></td>
         <td class="amt">₹${Number(r.amount).toLocaleString('en-IN')}</td>
-        <td><button class="btn-secondary" onclick='reprintFromLedger(${JSON.stringify(r).replace(/'/g,"&apos;")})'>🖨️</button></td>`;
+        <td style="white-space:nowrap;">
+          <button class="btn-secondary" title="Print" onclick='reprintFromLedger(${dataAttr})'>🖨️</button>
+          <button class="btn-secondary" title="Edit" onclick='editDonation(${dataAttr})'>✏️</button>
+          <button class="btn-secondary" title="Delete" onclick="deleteDonation('${r.id}')">🗑️</button>
+        </td>`;
       body.appendChild(tr);
     });
 }
